@@ -1,0 +1,289 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paytrim API Auth Documentation</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #fafafa;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: #3b4151;
+        }
+        pre {
+            background: #2e3a59;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .download-link {
+            display: inline-flex;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: 500;
+            text-decoration: none;
+            background: #2d62ff;
+            color: white;
+            margin: 10px 0;
+        }
+        .tabs {
+            display: flex;
+            margin-top: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            background: #f8f9fa;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            color: #3b4151;
+        }
+        .tab.active {
+            background: #fff;
+            border-bottom: 2px solid #fff;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .logo {
+            width: 134px;
+            height: 37px;
+            margin: 0 auto 2rem;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                width: 100px;
+                height: auto;
+            }
+        }
+        .info-box {
+            background: #e8f4ff;
+            border-left: 4px solid #2d62ff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d62ff;
+        }
+
+        .info-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <svg class="logo" width="134" height="37" viewBox="0 0 134 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21.5913 34.5549L20.1367 27.9404L12.7811 25.9094C10.9147 25.3879 9.51496 23.9058 9.10327 22.012L5.28823 4.69338L2.26914 3.86999C0.979164 3.51319 -0.255917 4.66593 0.0459922 5.98335L5.5627 31.1241C5.80971 32.2494 6.66055 33.1552 7.78584 33.4845L19.3682 36.6683C20.6581 37.0251 21.8658 35.8724 21.5913 34.5549Z" fill="#161625"/>
+            <path d="M27.1355 25.0036L22.8539 5.59904C22.6069 4.47374 21.756 3.56801 20.6307 3.23866L9.0484 0.0548875C8.88372 -5.02914e-06 8.71904 0 8.55437 0C7.45651 0 6.55079 1.01551 6.7978 2.16825L11.0794 21.5728C11.3264 22.6981 12.1773 23.6038 13.3026 23.9332L24.8849 27.1169C25.0496 27.1718 25.2143 27.1718 25.3789 27.1718C26.4768 27.1993 27.3825 26.1563 27.1355 25.0036Z" fill="#161625"/>
+            <path d="M21.5913 34.5549L20.1367 27.9404L12.7811 25.9094C10.9147 25.3879 9.51496 23.9058 9.10327 22.012L5.28823 4.69338L2.26914 3.86999C0.979164 3.51319 -0.255917 4.66593 0.0459922 5.98335L5.5627 31.1241C5.80971 32.2494 6.66055 33.1552 7.78584 33.4845L19.3682 36.6683C20.6581 37.0251 21.8658 35.8724 21.5913 34.5549Z" fill="#161625"/>
+            <path d="M27.1355 25.0036L22.8539 5.59904C22.6069 4.47374 21.756 3.56801 20.6307 3.23866L9.0484 0.0548875C8.88372 -5.02914e-06 8.71904 0 8.55437 0C7.45651 0 6.55079 1.01551 6.7978 2.16825L11.0794 21.5728C11.3264 22.6981 12.1773 23.6038 13.3026 23.9332L24.8849 27.1169C25.0496 27.1718 25.2143 27.1718 25.3789 27.1718C26.4768 27.1993 27.3825 26.1563 27.1355 25.0036Z" fill="#161625"/>
+            <path d="M47.364 10.5665C48.4893 11.6095 49.0657 12.8995 49.0657 14.4365C49.0657 15.9735 48.5442 17.2909 47.4738 18.3613C46.4034 19.4317 44.7566 19.9532 42.5609 19.9532H39.2125V27.4186H36.1934V9.02954H42.5609C44.6468 9.02954 46.2387 9.55102 47.364 10.5665ZM39.2125 17.6202H42.5609C43.7136 17.6202 44.5645 17.3458 45.1408 16.7968C45.7172 16.2479 45.9917 15.4794 45.9917 14.4914C45.9917 13.5033 45.7172 12.7348 45.1408 12.1859C44.5645 11.6369 43.7136 11.3625 42.5609 11.3625H39.2125V17.6202Z" fill="#161625"/>
+            <path d="M52.1673 25.5524C50.8499 24.1252 50.1912 22.3138 50.1912 20.0906C50.1912 17.8675 50.8499 16.0835 52.1673 14.6837C53.4847 13.2839 55.1315 12.5978 57.0802 12.5978C58.2329 12.5978 59.2484 12.8722 60.1267 13.3663C61.005 13.8878 61.6637 14.5739 62.1577 15.4247V12.8173H65.2043V27.4188H62.1303V24.7016C61.6363 25.6073 60.9501 26.3209 60.0993 26.8698C59.221 27.4188 58.2329 27.6658 57.0802 27.6658C55.1315 27.6932 53.4847 26.9796 52.1673 25.5524ZM60.8129 23.7135C61.6912 22.8352 62.1303 21.6276 62.1303 20.1181C62.1303 18.6085 61.6912 17.4283 60.8129 16.55C59.9346 15.6718 58.8916 15.2326 57.7114 15.2326C56.5038 15.2326 55.4608 15.6718 54.61 16.5226C53.7317 17.4009 53.2926 18.5811 53.2926 20.0632C53.2926 21.5727 53.7317 22.7803 54.61 23.6861C55.4883 24.5918 56.5313 25.0584 57.7114 25.0584C58.9191 25.0584 59.9346 24.6193 60.8129 23.7135Z" fill="#161625"/>
+            <path d="M72.697 27.1991L66.9607 12.8447H70.3366L74.4535 23.9605L78.7077 12.8447H81.8366L72.8891 34.3077H69.7602L72.697 27.1991Z" fill="#161625"/>
+            <path d="M91.3603 15.3149H87.8197V23.3841C87.8197 23.933 87.957 24.3173 88.204 24.5643C88.451 24.8113 88.8901 24.9211 89.5214 24.9211H91.3878V27.4461H88.9999C86.2004 27.4461 84.8007 26.1013 84.8007 23.3841V15.3149H83.0715V12.8447H84.8007V9.2218H87.8472V12.8447H91.3878V15.3149H91.3603Z" fill="#161625"/>
+            <path d="M96.5752 12.8448V15.3973C97.5084 13.531 98.9631 12.6252 100.939 12.6252V15.7541H100.171C98.9905 15.7541 98.0848 16.056 97.481 16.6598C96.8772 17.2637 96.5752 18.3066 96.5752 19.7887V27.4737H93.5562V12.8723H96.5752V12.8448Z" fill="#161625"/>
+            <path d="M102.943 27.4462V12.8447H105.962V27.4462H102.943Z" fill="#161625"/>
+            <path d="M112.412 12.8448V15.1503C113.373 13.4486 114.937 12.5978 117.078 12.5978C118.203 12.5978 119.219 12.8722 120.097 13.3937C120.975 13.9152 121.662 14.6837 122.101 15.6992C122.622 14.7386 123.336 13.9701 124.241 13.4212C125.147 12.8722 126.19 12.5978 127.315 12.5978C128.99 12.5978 130.362 13.1467 131.46 14.2171C132.53 15.315 133.079 16.8245 133.079 18.8006V27.4188H130.06V19.2672C130.06 17.9498 129.731 16.9617 129.072 16.2481C128.413 15.562 127.535 15.2052 126.382 15.2052C125.257 15.2052 124.351 15.562 123.693 16.2481C123.034 16.9343 122.704 17.9498 122.704 19.2672V27.4188H119.713V19.2672C119.713 17.9498 119.383 16.9617 118.725 16.2481C118.066 15.562 117.188 15.2052 116.035 15.2052C114.91 15.2052 114.004 15.562 113.345 16.2481C112.687 16.9343 112.357 17.9498 112.357 19.2672V27.4188H109.338V12.8173H112.412V12.8448Z" fill="#161625"/>
+            <path d="M106.099 7.46521H102.833V10.7588H106.099V7.46521Z" fill="#161625"/>
+        </svg>
+        <h1>Paytrim API Auth Documentation</h1>
+        <p>This API allows you to obtain an OAuth 2.0 access token using the client credentials flow. <br/> Paytrim uses Azure Entra as the Authentication provider. We will provide you with credentials to obtain a token. Include the token in the header as 'Bearer token' on every request to api.paytrim.com.</p>
+        <h2>Endpoint</h2>
+        <pre>POST https://login.microsoftonline.com/common/oauth2/v2.0/token</pre>
+        <div class="info-box">
+            <strong>Important Note About Tokens:</strong>
+            <ul>
+                <li>Separate tokens are required for sandbox and production environments</li>
+                <li>Sandbox tokens can only be used with the sandbox environment (https://api.paytrim.com/Sandbox/)</li>
+                <li>Production tokens can only be used with the production environment (https://api.paytrim.com/)</li>
+                <li>Always test your integration in sandbox before moving to production</li>
+            </ul>
+        </div>
+        <h2>Request Parameters</h2>
+        <ul>
+            <li><strong>grant_type</strong> (string, required): Must be 'client_credentials'</li>
+            <li><strong>client_id</strong> (string, required): Client ID obtained from Paytrim</li>
+            <li><strong>client_secret</strong> (string, required): Client secret obtained from Paytrim</li>
+            <li><strong>scope</strong> (string, required): The permission scope being requested obtained from Paytrim(e.g., https://graph.microsoft.com/.default)</li>
+        </ul>
+        <h2>Example Request</h2>
+        <div class="tabs">
+            <div class="tab active" data-tab="curl">cURL</div>
+            <div class="tab" data-tab="java">Java</div>
+            <div class="tab" data-tab="kotlin">Kotlin</div>
+            <div class="tab" data-tab="csharp">C#</div>
+            <div class="tab" data-tab="javascript">JavaScript</div>
+        </div>
+        <div id="curl" class="tab-content active">
+            <pre>
+curl -X POST 'https://login.microsoftonline.com/common/oauth2/v2.0/token' \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'grant_type=client_credentials' \
+--data-urlencode 'client_id=11111111-1111-1111-1111-111111111111' \
+--data-urlencode 'client_secret=your-client-secret' \
+--data-urlencode 'scope=https://graph.microsoft.com/.default'
+            </pre>
+        </div>
+        <div id="java" class="tab-content">
+            <pre>
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
+public class AuthExample {
+    public static void main(String[] args) throws Exception {
+        URL url = new URL("https://login.microsoftonline.com/common/oauth2/v2.0/token");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        connection.setDoOutput(true);
+
+        String params = "grant_type=client_credentials" +
+                        "&client_id=11111111-1111-1111-1111-111111111111" +
+                        "&client_secret=your-client-secret" +
+                        "&scope=https://graph.microsoft.com/.default";
+
+        try (OutputStream os = connection.getOutputStream()) {
+            byte[] input = params.getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
+        }
+
+        int responseCode = connection.getResponseCode();
+        System.out.println("Response Code: " + responseCode);
+    }
+}
+            </pre>
+        </div>
+        <div id="kotlin" class="tab-content">
+            <pre>
+import java.io.OutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import java.nio.charset.StandardCharsets
+
+fun main() {
+    val url = URL("https://login.microsoftonline.com/common/oauth2/v2.0/token")
+    val connection = url.openConnection() as HttpURLConnection
+    connection.requestMethod = "POST"
+    connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+    connection.doOutput = true
+
+    val params = "grant_type=client_credentials" +
+                 "&client_id=11111111-1111-1111-1111-111111111111" +
+                 "&client_secret=your-client-secret" +
+                 "&scope=https://graph.microsoft.com/.default"
+
+    connection.outputStream.use { os: OutputStream ->
+        val input = params.toByteArray(StandardCharsets.UTF_8)
+        os.write(input, 0, input.size)
+    }
+
+    val responseCode = connection.responseCode
+    println("Response Code: $responseCode")
+}
+            </pre>
+        </div>
+        <div id="csharp" class="tab-content">
+            <pre>
+using System;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://login.microsoftonline.com/common/oauth2/v2.0/token");
+
+        var content = new StringContent("grant_type=client_credentials&client_id=11111111-1111-1111-1111-111111111111&client_secret=your-client-secret&scope=https://graph.microsoft.com/.default", Encoding.UTF8, "application/x-www-form-urlencoded");
+        request.Content = content;
+
+        var response = await client.SendAsync(request);
+        var responseString = await response.Content.ReadAsStringAsync();
+
+        Console.WriteLine(responseString);
+    }
+}
+            </pre>
+        </div>
+        <div id="javascript" class="tab-content">
+            <pre>
+const fetch = require('node-fetch');
+
+const url = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
+const params = new URLSearchParams();
+params.append('grant_type', 'client_credentials');
+params.append('client_id', '11111111-1111-1111-1111-111111111111');
+params.append('client_secret', 'your-client-secret');
+params.append('scope', 'https://graph.microsoft.com/.default');
+
+fetch(url, {
+    method: 'POST',
+    body: params,
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Error:', error));
+            </pre>
+        </div>
+        <h2>Response</h2>
+        <pre>
+{
+    "token_type": "Bearer",
+    "expires_in": 3599,
+    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGci..."
+}
+        </pre>
+        <h2>Download JSON File</h2>
+        <p>This is an OpenAPI JSON file that defines the structure and details of the Auth API, including endpoints, request parameters, and responses.</p>
+        <a href="auth.json" class="download-link" download>Download auth.json</a>
+    </div>
+    <script>
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
