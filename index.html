@@ -62,7 +62,7 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 24px;
             padding: 24px;
         }
@@ -194,6 +194,15 @@
                     <h6 class="card-title">API Documentation</h6>
                     <p class="card-text">Complete documentation for integrating with Paytrim's API services.</p>
                     <a href="paytrim-api-service.html" class="card-link">Read more »</a>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span>Docs</span>
+                    </div>
+                    <h6 class="card-title">Paytrim Online Gateway</h6>
+                    <p class="card-text">Integrate to be able to do Online transactions.</p>
+                    <a href="https://paytrim-docs.stoplight.io/docs/merchant-api-documentation/gi4oo74s4all4-getting-started"
+                        class="card-link" target="_blank" rel="noopener">Read more »</a>
                 </div>
             </div>
         </div>

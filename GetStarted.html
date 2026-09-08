@@ -81,6 +81,32 @@
             margin: 0 auto 2rem;
             display: block;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        th {
+            text-align: left;
+            font-family: 'Montserrat', sans-serif;
+            color: #3b4151;
+            background: #f8f9fa;
+            padding: 10px 12px;
+            border-bottom: 2px solid #e1e4e8;
+        }
+
+        td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #e1e4e8;
+        }
+
+        td:not(:first-child) {
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
     </style>
 </head>
 
@@ -140,20 +166,79 @@
 
             <h3>Sandbox Environment</h3>
             <pre>
-curl -X GET 'https://api.paytrim.com/Sandbox/onboarding/pricelists' \
+curl -X GET 'https://api.paytrim.com/Sandbox/Merchant/pricelists' \
 -H 'Authorization: Bearer your-sandbox-token' \
 -H 'Content-Type: application/json'</pre>
-            <p>Use these company IDs for testing in sandbox:</p>
-            <ul>
-                <li>5560572850</li>
-                <li>8904062380</li>
-                <li>5566808134</li>
-                <li>5590672613</li>
-            </ul>
+            <p>
+                The sandbox answers from fixed companies, so the same request always gives the same
+                answer and nothing you send is stored. Start here to see every company available to
+                you, what each one is for, and what each endpoint answers for it:
+            </p>
+            <pre>
+curl -X GET 'https://api.paytrim.com/Sandbox/Merchant/sandbox-cases' \
+-H 'Authorization: Bearer your-sandbox-token'</pre>
+            <p>
+                Each market has the same five companies, so you can learn the flow once and repeat
+                it per country. Only companies registered in <em>your</em> country resolve &mdash; a
+                Swedish organisation number called with Finnish credentials answers 404, exactly as
+                it would in production.
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>What it is for</th>
+                        <th>SE</th>
+                        <th>FI</th>
+                        <th>DK</th>
+                        <th>NO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Onboarded and running</td>
+                        <td>5560729146</td>
+                        <td>27481932</td>
+                        <td>37120456</td>
+                        <td>918834729</td>
+                    </tr>
+                    <tr>
+                        <td>Onboarded, still mid-process</td>
+                        <td>5591283402</td>
+                        <td>16350275</td>
+                        <td>25894316</td>
+                        <td>984520190</td>
+                    </tr>
+                    <tr>
+                        <td>Ready to be onboarded</td>
+                        <td>5020786157</td>
+                        <td>30817468</td>
+                        <td>41068728</td>
+                        <td>829103656</td>
+                    </tr>
+                    <tr>
+                        <td>Sole trader, no signing combination</td>
+                        <td>8904062380</td>
+                        <td>19274052</td>
+                        <td>18936577</td>
+                        <td>916502834</td>
+                    </tr>
+                    <tr>
+                        <td>Not in the register</td>
+                        <td>5564831971</td>
+                        <td>23369257</td>
+                        <td>20443189</td>
+                        <td>992741686</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>
+                The Transactions sandbox has its own companies: 5560572850, 8904062380, 5566808134
+                and 5590672613.
+            </p>
 
             <h3>Production Environment</h3>
             <pre>
-curl -X GET 'https://api.paytrim.com/onboarding/pricelists' \
+curl -X GET 'https://api.paytrim.com/Merchant/pricelists' \
 -H 'Authorization: Bearer your-production-token' \
 -H 'Content-Type: application/json'</pre>
 
@@ -182,6 +267,11 @@ curl -X GET 'https://api.paytrim.com/onboarding/pricelists' \
             <h3>Need Help?</h3>
             <p>If you need assistance, contact our support team or refer to our detailed documentation:</p>
             <a href="paytrim-api-service.html" class="btn">API Documentation</a>
+        </div>
+        <div class="info-box">
+            <h3>What's Changed?</h3>
+            <p>Track updates to the API over time in the changelog.</p>
+            <a href="changelog.html" class="btn">View Changelog</a>
         </div>
     </div>
 </body>
