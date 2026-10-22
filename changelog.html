@@ -123,6 +123,19 @@
         </p>
 
         <div class="entry">
+            <h2>2026-10-13</h2>
+            <ul>
+                <li><strong>Service fees can now have four new fee types.</strong> <code>feeType</code> on
+                    the service fees returned for a legal entity can now also be <code>Insurance</code>,
+                    <code>TerminalAccessories</code>, <code>Franchise</code> or <code>OtherHardware</code>,
+                    in addition to <code>MinimumFeeWithdrawn</code>, <code>TerminalFee</code>,
+                    <code>CashRegisterFee</code> and <code>Other</code>. Nothing else about the response
+                    has changed. If your client deserializes <code>feeType</code> into a strict enum, add
+                    the new values so that fees of these types do not fail to parse.</li>
+            </ul>
+        </div>
+
+        <div class="entry">
             <h2>2026-09-08</h2>
             <ul>
                 <li><strong>Card transactions now return <code>paymentAccountReference</code>.</strong>
