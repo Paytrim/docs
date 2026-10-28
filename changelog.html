@@ -123,8 +123,48 @@
         </p>
 
         <div class="entry">
-            <h2>2026-10-13</h2>
+            <h2>2026-10-23</h2>
             <ul>
+                <li><strong>Consistent company id validation across all endpoints.</strong>
+                    Every endpoint that takes a company id in the path, including
+                    <code>company-registry-information</code>, <code>signatory-combinations</code>,
+                    <code>merchant-information</code>, the store endpoints and <code>contact-info</code>,
+                    validates the id against your country (SE, FI, NO or DK) and answers 400 with a
+                    problem-details body if it is not valid. Separators are optional, so
+                    <code>556057-2850</code> and <code>5560572850</code> are both accepted.</li>
+                <li><strong>Sandbox Transactions answer 404 for unknown companies.</strong>
+                    <code>account-transaction</code> and <code>card-transaction</code> answer 404
+                    "Company does not exist" for a valid id that is not a sandbox company.</li>
+            </ul>
+        </div>
+
+        <div class="entry">
+            <h2>2026-10-21</h2>
+            <ul>
+                <li><strong>The authentication examples now use the correct scope.</strong> The
+                    examples previously showed <code>https://graph.microsoft.com/.default</code>, which
+                    issues a token for Microsoft Graph that the Paytrim API does not accept. Use the
+                    scope Paytrim provides together with your client credentials. The Java, Kotlin and
+                    C# examples now also URL-encode the request, so client secrets containing characters
+                    such as <code>+</code> or <code>=</code> work.</li>
+                <li><strong>The authentication page now covers token reuse and troubleshooting.</strong>
+                    It explains how long to reuse a token and lists the most common token errors with
+                    what to do about each.</li>
+            </ul>
+        </div>
+
+        <div class="entry">
+            <h2>2026-10-15</h2>
+            <ul>
+                <li><strong>Service fees can now be a percentage of each business day's turnover.</strong>
+                    The service fees returned for a legal entity have two new fields.
+                    <code>feeCalculationType</code> is <code>Fixed</code> or <code>Percentage</code>.
+                    For a <code>Percentage</code> fee, <code>percentage</code> holds the rate in percent
+                    with two decimals (<code>2.5</code> means 2.5 %), <code>amount</code> is
+                    <code>0</code> and <code>feePeriod</code> is <code>Daily</code>. For a
+                    <code>Fixed</code> fee, <code>percentage</code> is <code>null</code> and
+                    <code>amount</code> is the fee as before. If your client deserializes
+                    <code>feeCalculationType</code> into a strict enum, accept both values.</li>
                 <li><strong>Service fees can now have four new fee types.</strong> <code>feeType</code> on
                     the service fees returned for a legal entity can now also be <code>Insurance</code>,
                     <code>TerminalAccessories</code>, <code>Franchise</code> or <code>OtherHardware</code>,

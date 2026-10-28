@@ -98,6 +98,22 @@
             margin: 0;
             padding-left: 20px;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background: #f8f9fa;
+            color: #3b4151;
+        }
     </style>
 </head>
 <body>
@@ -117,26 +133,28 @@
             <path d="M106.099 7.46521H102.833V10.7588H106.099V7.46521Z" fill="#161625"/>
         </svg>
         <h1>Paytrim API Auth Documentation</h1>
-        <p>This API allows you to obtain an OAuth 2.0 access token using the client credentials flow. <br/> Paytrim uses Azure Entra as the Authentication provider. We will provide you with credentials to obtain a token. Include the token in the header as 'Bearer token' on every request to api.paytrim.com.</p>
+        <p>This API allows you to obtain an OAuth 2.0 access token using the client credentials flow. <br/> Paytrim uses Microsoft Entra ID as the authentication provider. We will provide you with credentials to obtain a token. Include the token in the header as 'Bearer token' on every request to api.paytrim.com.</p>
         <h2>Endpoint</h2>
         <pre>POST https://login.microsoftonline.com/common/oauth2/v2.0/token</pre>
         <div class="info-box">
-            <strong>Important Note About Tokens:</strong>
+            <strong>Important Note About Environments:</strong>
             <ul>
-                <li>Separate tokens are required for sandbox and production environments</li>
-                <li>Sandbox tokens can only be used with the sandbox environment (https://api.paytrim.com/Sandbox/)</li>
-                <li>Production tokens can only be used with the production environment (https://api.paytrim.com/)</li>
+                <li>You receive separate credentials (client_id, client_secret and scope) for sandbox and production</li>
+                <li>A token obtained with sandbox credentials can only be used with the sandbox environment (https://api.paytrim.com/Sandbox/)</li>
+                <li>A token obtained with production credentials can only be used with the production environment (https://api.paytrim.com/)</li>
                 <li>Always test your integration in sandbox before moving to production</li>
             </ul>
         </div>
         <h2>Request Parameters</h2>
+        <p>Send the parameters as a form-encoded body with the header <strong>Content-Type: application/x-www-form-urlencoded</strong>. A JSON body is not accepted.</p>
         <ul>
             <li><strong>grant_type</strong> (string, required): Must be 'client_credentials'</li>
             <li><strong>client_id</strong> (string, required): Client ID obtained from Paytrim</li>
             <li><strong>client_secret</strong> (string, required): Client secret obtained from Paytrim</li>
-            <li><strong>scope</strong> (string, required): The permission scope being requested obtained from Paytrim(e.g., https://graph.microsoft.com/.default)</li>
+            <li><strong>scope</strong> (string, required): The permission scope provided by Paytrim</li>
         </ul>
         <h2>Example Request</h2>
+        <p>The examples read your credentials from the environment variables <strong>PAYTRIM_CLIENT_ID</strong>, <strong>PAYTRIM_CLIENT_SECRET</strong> and <strong>PAYTRIM_SCOPE</strong>. Keep the client secret out of source code.</p>
         <div class="tabs">
             <div class="tab active" data-tab="curl">cURL</div>
             <div class="tab" data-tab="java">Java</div>
@@ -149,117 +167,162 @@
 curl -X POST 'https://login.microsoftonline.com/common/oauth2/v2.0/token' \
 -H 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'grant_type=client_credentials' \
---data-urlencode 'client_id=11111111-1111-1111-1111-111111111111' \
---data-urlencode 'client_secret=your-client-secret' \
---data-urlencode 'scope=https://graph.microsoft.com/.default'
+--data-urlencode "client_id=$PAYTRIM_CLIENT_ID" \
+--data-urlencode "client_secret=$PAYTRIM_CLIENT_SECRET" \
+--data-urlencode "scope=$PAYTRIM_SCOPE"
             </pre>
         </div>
         <div id="java" class="tab-content">
             <pre>
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class AuthExample {
     public static void main(String[] args) throws Exception {
-        URL url = new URL("https://login.microsoftonline.com/common/oauth2/v2.0/token");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        connection.setDoOutput(true);
+        Map&lt;String, String&gt; params = new LinkedHashMap&lt;&gt;();
+        params.put("grant_type", "client_credentials");
+        params.put("client_id", System.getenv("PAYTRIM_CLIENT_ID"));
+        params.put("client_secret", System.getenv("PAYTRIM_CLIENT_SECRET"));
+        params.put("scope", System.getenv("PAYTRIM_SCOPE"));
 
-        String params = "grant_type=client_credentials" +
-                        "&client_id=11111111-1111-1111-1111-111111111111" +
-                        "&client_secret=your-client-secret" +
-                        "&scope=https://graph.microsoft.com/.default";
+        // Values must be URL-encoded (client secrets can contain characters like + and =)
+        String form = params.entrySet().stream()
+                .map(e -&gt; URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8) + "=" +
+                          URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
+                .collect(Collectors.joining("&amp;"));
 
-        try (OutputStream os = connection.getOutputStream()) {
-            byte[] input = params.getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://login.microsoftonline.com/common/oauth2/v2.0/token"))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(form))
+                .build();
+
+        HttpResponse&lt;String&gt; response = HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            throw new IllegalStateException("Token request failed: " + response.body());
         }
 
-        int responseCode = connection.getResponseCode();
-        System.out.println("Response Code: " + responseCode);
+        // Use a JSON library (e.g. Jackson) in production code
+        Matcher matcher = Pattern.compile("\"access_token\"\\s*:\\s*\"([^\"]+)\"").matcher(response.body());
+        String accessToken = matcher.find() ? matcher.group(1) : null;
+        System.out.println("Access token: " + accessToken);
     }
 }
             </pre>
         </div>
         <div id="kotlin" class="tab-content">
             <pre>
-import java.io.OutputStream
-import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
+import java.net.URLEncoder
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
 
 fun main() {
-    val url = URL("https://login.microsoftonline.com/common/oauth2/v2.0/token")
-    val connection = url.openConnection() as HttpURLConnection
-    connection.requestMethod = "POST"
-    connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
-    connection.doOutput = true
+    val params = mapOf(
+        "grant_type" to "client_credentials",
+        "client_id" to System.getenv("PAYTRIM_CLIENT_ID"),
+        "client_secret" to System.getenv("PAYTRIM_CLIENT_SECRET"),
+        "scope" to System.getenv("PAYTRIM_SCOPE")
+    )
 
-    val params = "grant_type=client_credentials" +
-                 "&client_id=11111111-1111-1111-1111-111111111111" +
-                 "&client_secret=your-client-secret" +
-                 "&scope=https://graph.microsoft.com/.default"
-
-    connection.outputStream.use { os: OutputStream ->
-        val input = params.toByteArray(StandardCharsets.UTF_8)
-        os.write(input, 0, input.size)
+    // Values must be URL-encoded (client secrets can contain characters like + and =)
+    val form = params.entries.joinToString("&amp;") { (key, value) -&gt;
+        URLEncoder.encode(key, StandardCharsets.UTF_8) + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8)
     }
 
-    val responseCode = connection.responseCode
-    println("Response Code: $responseCode")
+    val request = HttpRequest.newBuilder()
+        .uri(URI.create("https://login.microsoftonline.com/common/oauth2/v2.0/token"))
+        .header("Content-Type", "application/x-www-form-urlencoded")
+        .POST(HttpRequest.BodyPublishers.ofString(form))
+        .build()
+
+    val response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString())
+    check(response.statusCode() == 200) { "Token request failed: ${response.body()}" }
+
+    // Use a JSON library (e.g. kotlinx.serialization) in production code
+    val accessToken = Regex("\"access_token\"\\s*:\\s*\"([^\"]+)\"").find(response.body())?.groupValues?.get(1)
+    println("Access token: $accessToken")
 }
             </pre>
         </div>
         <div id="csharp" class="tab-content">
             <pre>
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 class Program
 {
     static async Task Main(string[] args)
     {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://login.microsoftonline.com/common/oauth2/v2.0/token");
+        using var client = new HttpClient();
 
-        var content = new StringContent("grant_type=client_credentials&client_id=11111111-1111-1111-1111-111111111111&client_secret=your-client-secret&scope=https://graph.microsoft.com/.default", Encoding.UTF8, "application/x-www-form-urlencoded");
-        request.Content = content;
+        // FormUrlEncodedContent URL-encodes the values (client secrets can contain characters like + and =)
+        var content = new FormUrlEncodedContent(new Dictionary&lt;string, string&gt;
+        {
+            ["grant_type"] = "client_credentials",
+            ["client_id"] = Environment.GetEnvironmentVariable("PAYTRIM_CLIENT_ID"),
+            ["client_secret"] = Environment.GetEnvironmentVariable("PAYTRIM_CLIENT_SECRET"),
+            ["scope"] = Environment.GetEnvironmentVariable("PAYTRIM_SCOPE")
+        });
 
-        var response = await client.SendAsync(request);
-        var responseString = await response.Content.ReadAsStringAsync();
+        var response = await client.PostAsync("https://login.microsoftonline.com/common/oauth2/v2.0/token", content);
+        var body = await response.Content.ReadAsStringAsync();
 
-        Console.WriteLine(responseString);
+        if (!response.IsSuccessStatusCode)
+            throw new InvalidOperationException($"Token request failed: {body}");
+
+        using var json = JsonDocument.Parse(body);
+        var accessToken = json.RootElement.GetProperty("access_token").GetString();
+        Console.WriteLine($"Access token: {accessToken}");
     }
 }
             </pre>
         </div>
         <div id="javascript" class="tab-content">
             <pre>
-const fetch = require('node-fetch');
-
+// Requires Node.js 18+ (built-in fetch)
 const url = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
-const params = new URLSearchParams();
-params.append('grant_type', 'client_credentials');
-params.append('client_id', '11111111-1111-1111-1111-111111111111');
-params.append('client_secret', 'your-client-secret');
-params.append('scope', 'https://graph.microsoft.com/.default');
+const params = new URLSearchParams({
+    grant_type: 'client_credentials',
+    client_id: process.env.PAYTRIM_CLIENT_ID,
+    client_secret: process.env.PAYTRIM_CLIENT_SECRET,
+    scope: process.env.PAYTRIM_SCOPE
+});
 
-fetch(url, {
-    method: 'POST',
-    body: params,
-    headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+async function getAccessToken() {
+    const response = await fetch(url, {
+        method: 'POST',
+        body: params,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(`Token request failed: ${JSON.stringify(data)}`);
     }
-})
-.then(response => response.json())
-.then(data => console.log(data))
-.catch(error => console.error('Error:', error));
+    return data.access_token;
+}
+
+getAccessToken()
+    .then(accessToken =&gt; console.log('Access token:', accessToken))
+    .catch(error =&gt; console.error('Error:', error));
             </pre>
         </div>
         <h2>Response</h2>
@@ -270,6 +333,66 @@ fetch(url, {
     "access_token": "eyJ0eXAiOiJKV1QiLCJhbGci..."
 }
         </pre>
+        <h2>Using the Token</h2>
+        <p>Send the access token in the Authorization header on every request to the API.</p>
+        <pre>
+curl 'https://api.paytrim.com/Sandbox/{endpoint}' \
+-H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGci...' \
+-H 'Accept: application/json'
+        </pre>
+        <div class="info-box">
+            <strong>Reuse the token until it expires</strong>
+            <ul>
+                <li>A token is valid for <strong>expires_in</strong> seconds (about one hour). Use the same token for all requests during that time.</li>
+                <li>Do not request a new token for every API call. It adds latency, and Microsoft Entra ID may throttle repeated token requests.</li>
+                <li>Request a new token shortly before the current one expires, or when the API responds with 401.</li>
+            </ul>
+        </div>
+        <h2>Troubleshooting</h2>
+        <p>If the token request fails, Microsoft Entra ID responds with an error code and an AADSTS code in <strong>error_description</strong>:</p>
+        <pre>
+{
+    "error": "invalid_client",
+    "error_description": "AADSTS7000215: Invalid client secret provided. ..."
+}
+        </pre>
+        <table>
+            <tr>
+                <th>Error</th>
+                <th>Cause</th>
+                <th>What to do</th>
+            </tr>
+            <tr>
+                <td>invalid_client<br/>AADSTS7000215</td>
+                <td>The client secret is wrong.</td>
+                <td>Check that you use the client secret for the right environment, without extra spaces.</td>
+            </tr>
+            <tr>
+                <td>invalid_client<br/>AADSTS7000222</td>
+                <td>The client secret has expired.</td>
+                <td>Contact Paytrim to get a new client secret.</td>
+            </tr>
+            <tr>
+                <td>unauthorized_client<br/>AADSTS700016</td>
+                <td>The client_id is wrong.</td>
+                <td>Check that you use the client_id for the right environment.</td>
+            </tr>
+            <tr>
+                <td>invalid_scope<br/>AADSTS70011</td>
+                <td>The scope is wrong.</td>
+                <td>Use the scope provided by Paytrim exactly as given.</td>
+            </tr>
+            <tr>
+                <td>invalid_request<br/>AADSTS900144</td>
+                <td>A required parameter is missing, often because the body was sent as JSON.</td>
+                <td>Send all four parameters as a form-encoded body (see Request Parameters).</td>
+            </tr>
+            <tr>
+                <td>HTTP 401 from api.paytrim.com</td>
+                <td>The token has expired, the Bearer prefix is missing, or the token belongs to the other environment.</td>
+                <td>Request a new token with the credentials for the environment you are calling.</td>
+            </tr>
+        </table>
         <h2>Download JSON File</h2>
         <p>This is an OpenAPI JSON file that defines the structure and details of the Auth API, including endpoints, request parameters, and responses.</p>
         <a href="auth.json" class="download-link" download>Download auth.json</a>

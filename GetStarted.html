@@ -180,8 +180,10 @@ curl -X GET 'https://api.paytrim.com/Sandbox/Merchant/sandbox-cases' \
             <p>
                 Each market has the same five companies, so you can learn the flow once and repeat
                 it per country. Only companies registered in <em>your</em> country resolve &mdash; a
-                Swedish organisation number called with Finnish credentials answers 404, exactly as
-                it would in production.
+                Swedish organisation number called with Finnish credentials is not a valid Finnish
+                id, so it answers 400 "Invalid organization number for country X." A valid id for
+                your country that is not a sandbox company answers 404. In production an invalid id
+                answers 400, and a valid id you have no access to answers 403 (except on <code>company-registry-information</code> and <code>signatory-combinations</code>, which do not check access).
             </p>
             <table>
                 <thead>
@@ -232,8 +234,41 @@ curl -X GET 'https://api.paytrim.com/Sandbox/Merchant/sandbox-cases' \
                 </tbody>
             </table>
             <p>
-                The Transactions sandbox has its own companies: 5560572850, 8904062380, 5566808134
-                and 5590672613.
+                The Transactions sandbox has its own companies, three per country. It uses your
+                partner's country, and a company from another country is not found:
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Country</th>
+                        <th>Company ids</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SE</td>
+                        <td>5560572850, 8904062380, 5566808134</td>
+                    </tr>
+                    <tr>
+                        <td>FI</td>
+                        <td>2876543-5, 3145926-0, 2650185-8</td>
+                    </tr>
+                    <tr>
+                        <td>NO</td>
+                        <td>926483153, 815730291, 970128468</td>
+                    </tr>
+                    <tr>
+                        <td>DK</td>
+                        <td>32847528, 29164037, 40536175</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>
+                Every endpoint that takes a company id in the route validates it first: it is accepted
+                with or without separators, for example <code>2876543-5</code> or
+                <code>28765435</code>, and an id that is invalid for your country answers 400
+                "Invalid organization number for country X." A valid id that is not a sandbox company
+                answers 404: "Company not found." on the Merchant endpoints and "Company does not exist" on the Transactions endpoints.
             </p>
 
             <h3>Production Environment</h3>
