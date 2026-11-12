@@ -123,6 +123,22 @@
         </p>
 
         <div class="entry">
+            <h2>2026-10-28</h2>
+            <ul>
+                <li><strong>404 "Company not found" for companies not available to you.</strong>
+                    Merchant and Transactions endpoints answer the same 404 whether the company does not
+                    exist, is not onboarded or is linked to another partner. To start working with a new
+                    customer, onboard it with <code>add-merchant</code>.</li>
+                <li><strong>403 and 503 carry a problem-details body.</strong> 403 means your client lacks
+                    the required app role or is not linked to a partner; 503 means access could not be
+                    verified right now &mdash; retry later.</li>
+                <li><strong>500 carries a problem-details body.</strong> Every 500 response is sent as
+                    <code>application/problem+json</code> with a generic title and a <code>traceId</code>.</li>
+                <li><strong>The sandbox answers the same way as production.</strong></li>
+            </ul>
+        </div>
+
+        <div class="entry">
             <h2>2026-10-23</h2>
             <ul>
                 <li><strong>Consistent company id validation across all endpoints.</strong>

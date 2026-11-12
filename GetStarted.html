@@ -170,8 +170,8 @@ curl -X GET 'https://api.paytrim.com/Sandbox/Merchant/pricelists' \
 -H 'Authorization: Bearer your-sandbox-token' \
 -H 'Content-Type: application/json'</pre>
             <p>
-                The sandbox answers from fixed companies, so the same request always gives the same
-                answer and nothing you send is stored. Start here to see every company available to
+                The sandbox is a simulation against fixed test companies, so the same request always
+                gives the same answer and nothing you send is stored. Start here to see every company available to
                 you, what each one is for, and what each endpoint answers for it:
             </p>
             <pre>
@@ -182,8 +182,27 @@ curl -X GET 'https://api.paytrim.com/Sandbox/Merchant/sandbox-cases' \
                 it per country. Only companies registered in <em>your</em> country resolve &mdash; a
                 Swedish organisation number called with Finnish credentials is not a valid Finnish
                 id, so it answers 400 "Invalid organization number for country X." A valid id for
-                your country that is not a sandbox company answers 404. In production an invalid id
-                answers 400, and a valid id you have no access to answers 403 (except on <code>company-registry-information</code> and <code>signatory-combinations</code>, which do not check access).
+                your country that is not a sandbox company answers 404 "Company not found", the same
+                response production gives for a company that is not available to you. The sandbox has
+                no companies linked to other partners: in production such a company answers exactly
+                like one that does not exist. <code>company-registry-information</code> and
+                <code>signatory-combinations</code> do not check access to the company. The API
+                reference lists every status code and what it means.
+            </p>
+            <p>
+                To find out whether to add a store or onboard, call <code>merchant-information</code>:
+                200 means the company is your merchant, so add stores with <code>POST store</code>;
+                404 "Company not found" means it is not available to your client, and if it is a new
+                customer of yours, onboard it with <code>add-merchant</code>;
+                503 means access could not be verified right now, so retry later rather than onboard.
+            </p>
+            <p>
+                <code>company-registry-information</code> and <code>signatory-combinations</code>
+                fetch registry data when you onboard a new customer. In
+                <code>company-registry-information</code>, <code>isOnboarded</code> is true when the
+                company is onboarded with you. These two endpoints allow 10 requests per minute per
+                client, shared between them, in production and in the sandbox. Above that the answer
+                is 429 with a <code>Retry-After</code> header giving the seconds until you can call again.
             </p>
             <table>
                 <thead>
@@ -268,7 +287,7 @@ curl -X GET 'https://api.paytrim.com/Sandbox/Merchant/sandbox-cases' \
                 with or without separators, for example <code>2876543-5</code> or
                 <code>28765435</code>, and an id that is invalid for your country answers 400
                 "Invalid organization number for country X." A valid id that is not a sandbox company
-                answers 404: "Company not found." on the Merchant endpoints and "Company does not exist" on the Transactions endpoints.
+                answers 404 "Company not found", on the Merchant and the Transactions endpoints alike.
             </p>
 
             <h3>Production Environment</h3>
