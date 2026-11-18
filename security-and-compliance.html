@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paytrim Security and Compliance</title>
+    <meta name="description" content="Paytrim's security and PCI DSS recommendations for merchants and partners that integrate with or use Paytrim's services, with a focus on online payments.">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            color: #212529;
+            line-height: 1.6;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 270px;
+            overflow-y: auto;
+            background: #fafafa;
+            border-right: 1px solid #e1e4e8;
+            padding: 24px 0;
+            box-sizing: border-box;
+        }
+
+        .sidebar ol {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar li a {
+            display: block;
+            padding: 8px 20px;
+            color: #3b4151;
+            text-decoration: none;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar li a:hover {
+            background: #eef2ff;
+        }
+
+        .sidebar li a.active {
+            color: #2d62ff;
+            font-weight: 700;
+            background: #eef2ff;
+            border-left-color: #2d62ff;
+        }
+
+        .sidebar .back {
+            display: block;
+            margin: 24px 20px 0;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .container {
+            margin-left: 270px;
+            max-width: 860px;
+            padding: 32px 48px 64px;
+        }
+
+        h2[id] {
+            scroll-margin-top: 16px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: #3b4151;
+        }
+
+        h2 {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e4e8;
+        }
+
+        h3 {
+            font-size: 1.05rem;
+            margin-top: 24px;
+        }
+
+        a {
+            color: #2d62ff;
+        }
+
+        .intro {
+            color: #6c757d;
+        }
+
+        pre {
+            background: #2e3a59;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            line-height: 1.4;
+        }
+
+        code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.9em;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .info-box {
+            background: #e8f4ff;
+            border-left: 4px solid #2d62ff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .warn-box {
+            background: #fff6e5;
+            border-left: 4px solid #e8a317;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin: 10px 0 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: #3b4151;
+        }
+
+        ul.checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul.checklist li {
+            padding-left: 28px;
+            position: relative;
+        }
+
+        ul.checklist li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 4px;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #2d62ff;
+            border-radius: 3px;
+        }
+
+        .meta {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .logo {
+            width: 134px;
+            height: 37px;
+            margin: 0 20px 24px;
+            display: block;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                position: static;
+                width: auto;
+                border-right: none;
+                border-bottom: 1px solid #e1e4e8;
+                padding: 16px 0;
+            }
+
+            .container {
+                margin-left: 0;
+                padding: 16px;
+            }
+
+            .logo {
+                width: 100px;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="sidebar" aria-label="Contents">
+        <a href="index.html" aria-label="Paytrim documentation">
+            <svg class="logo" width="134" height="37" viewBox="0 0 134 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.5913 34.5549L20.1367 27.9404L12.7811 25.9094C10.9147 25.3879 9.51496 23.9058 9.10327 22.012L5.28823 4.69338L2.26914 3.86999C0.979164 3.51319 -0.255917 4.66593 0.0459922 5.98335L5.5627 31.1241C5.80971 32.2494 6.66055 33.1552 7.78584 33.4845L19.3682 36.6683C20.6581 37.0251 21.8658 35.8724 21.5913 34.5549Z" fill="#161625"/>
+                <path d="M27.1355 25.0036L22.8539 5.59904C22.6069 4.47374 21.756 3.56801 20.6307 3.23866L9.0484 0.0548875C8.88372 -5.02914e-06 8.71904 0 8.55437 0C7.45651 0 6.55079 1.01551 6.7978 2.16825L11.0794 21.5728C11.3264 22.6981 12.1773 23.6038 13.3026 23.9332L24.8849 27.1169C25.0496 27.1718 25.2143 27.1718 25.3789 27.1718C26.4768 27.1993 27.3825 26.1563 27.1355 25.0036Z" fill="#161625"/>
+                <path d="M21.5913 34.5549L20.1367 27.9404L12.7811 25.9094C10.9147 25.3879 9.51496 23.9058 9.10327 22.012L5.28823 4.69338L2.26914 3.86999C0.979164 3.51319 -0.255917 4.66593 0.0459922 5.98335L5.5627 31.1241C5.80971 32.2494 6.66055 33.1552 7.78584 33.4845L19.3682 36.6683C20.6581 37.0251 21.8658 35.8724 21.5913 34.5549Z" fill="#161625"/>
+                <path d="M27.1355 25.0036L22.8539 5.59904C22.6069 4.47374 21.756 3.56801 20.6307 3.23866L9.0484 0.0548875C8.88372 -5.02914e-06 8.71904 0 8.55437 0C7.45651 0 6.55079 1.01551 6.7978 2.16825L11.0794 21.5728C11.3264 22.6981 12.1773 23.6038 13.3026 23.9332L24.8849 27.1169C25.0496 27.1718 25.2143 27.1718 25.3789 27.1718C26.4768 27.1993 27.3825 26.1563 27.1355 25.0036Z" fill="#161625"/>
+                <path d="M47.364 10.5665C48.4893 11.6095 49.0657 12.8995 49.0657 14.4365C49.0657 15.9735 48.5442 17.2909 47.4738 18.3613C46.4034 19.4317 44.7566 19.9532 42.5609 19.9532H39.2125V27.4186H36.1934V9.02954H42.5609C44.6468 9.02954 46.2387 9.55102 47.364 10.5665ZM39.2125 17.6202H42.5609C43.7136 17.6202 44.5645 17.3458 45.1408 16.7968C45.7172 16.2479 45.9917 15.4794 45.9917 14.4914C45.9917 13.5033 45.7172 12.7348 45.1408 12.1859C44.5645 11.6369 43.7136 11.3625 42.5609 11.3625H39.2125V17.6202Z" fill="#161625"/>
+                <path d="M52.1673 25.5524C50.8499 24.1252 50.1912 22.3138 50.1912 20.0906C50.1912 17.8675 50.8499 16.0835 52.1673 14.6837C53.4847 13.2839 55.1315 12.5978 57.0802 12.5978C58.2329 12.5978 59.2484 12.8722 60.1267 13.3663C61.005 13.8878 61.6637 14.5739 62.1577 15.4247V12.8173H65.2043V27.4188H62.1303V24.7016C61.6363 25.6073 60.9501 26.3209 60.0993 26.8698C59.221 27.4188 58.2329 27.6658 57.0802 27.6658C55.1315 27.6932 53.4847 26.9796 52.1673 25.5524ZM60.8129 23.7135C61.6912 22.8352 62.1303 21.6276 62.1303 20.1181C62.1303 18.6085 61.6912 17.4283 60.8129 16.55C59.9346 15.6718 58.8916 15.2326 57.7114 15.2326C56.5038 15.2326 55.4608 15.6718 54.61 16.5226C53.7317 17.4009 53.2926 18.5811 53.2926 20.0632C53.2926 21.5727 53.7317 22.7803 54.61 23.6861C55.4883 24.5918 56.5313 25.0584 57.7114 25.0584C58.9191 25.0584 59.9346 24.6193 60.8129 23.7135Z" fill="#161625"/>
+                <path d="M72.697 27.1991L66.9607 12.8447H70.3366L74.4535 23.9605L78.7077 12.8447H81.8366L72.8891 34.3077H69.7602L72.697 27.1991Z" fill="#161625"/>
+                <path d="M91.3603 15.3149H87.8197V23.3841C87.8197 23.933 87.957 24.3173 88.204 24.5643C88.451 24.8113 88.8901 24.9211 89.5214 24.9211H91.3878V27.4461H88.9999C86.2004 27.4461 84.8007 26.1013 84.8007 23.3841V15.3149H83.0715V12.8447H84.8007V9.2218H87.8472V12.8447H91.3878V15.3149H91.3603Z" fill="#161625"/>
+                <path d="M96.5752 12.8448V15.3973C97.5084 13.531 98.9631 12.6252 100.939 12.6252V15.7541H100.171C98.9905 15.7541 98.0848 16.056 97.481 16.6598C96.8772 17.2637 96.5752 18.3066 96.5752 19.7887V27.4737H93.5562V12.8723H96.5752V12.8448Z" fill="#161625"/>
+                <path d="M102.943 27.4462V12.8447H105.962V27.4462H102.943Z" fill="#161625"/>
+                <path d="M112.412 12.8448V15.1503C113.373 13.4486 114.937 12.5978 117.078 12.5978C118.203 12.5978 119.219 12.8722 120.097 13.3937C120.975 13.9152 121.662 14.6837 122.101 15.6992C122.622 14.7386 123.336 13.9701 124.241 13.4212C125.147 12.8722 126.19 12.5978 127.315 12.5978C128.99 12.5978 130.362 13.1467 131.46 14.2171C132.53 15.315 133.079 16.8245 133.079 18.8006V27.4188H130.06V19.2672C130.06 17.9498 129.731 16.9617 129.072 16.2481C128.413 15.562 127.535 15.2052 126.382 15.2052C125.257 15.2052 124.351 15.562 123.693 16.2481C123.034 16.9343 122.704 17.9498 122.704 19.2672V27.4188H119.713V19.2672C119.713 17.9498 119.383 16.9617 118.725 16.2481C118.066 15.562 117.188 15.2052 116.035 15.2052C114.91 15.2052 114.004 15.562 113.345 16.2481C112.687 16.9343 112.357 17.9498 112.357 19.2672V27.4188H109.338V12.8173H112.412V12.8448Z" fill="#161625"/>
+                <path d="M106.099 7.46521H102.833V10.7588H106.099V7.46521Z" fill="#161625"/>
+            </svg>
+        </a>
+        <ol>
+                <li><a href="#about-this-guide">About this guide</a></li>
+                <li><a href="#integration-options-and-pci-dss-scope">Integration options and PCI DSS scope</a></li>
+                <li><a href="#hosted-payment-page-via-redirect">Hosted Payment Page via redirect</a></li>
+                <li><a href="#another-providers-embedded-card-fields-and-script-security">Another provider's embedded card fields and script security</a></li>
+                <li><a href="#content-security-policy-and-subresource-integrity">Content Security Policy and Subresource Integrity</a></li>
+                <li><a href="#api-credentials">API credentials</a></li>
+                <li><a href="#platforms-and-partners">Platforms and partners</a></li>
+                <li><a href="#validating-your-compliance">Validating your compliance</a></li>
+                <li><a href="#suspected-compromise">Suspected compromise</a></li>
+                <li><a href="#checklist">Checklist</a></li>
+                <li><a href="#sources">Sources</a></li>
+            </ol>
+        <a class="back" href="index.html">&laquo; Back to documentation</a>
+    </nav>
+
+    <main class="container">
+        <h1>Security and Compliance</h1>
+        <p class="intro">
+            Paytrim's recommendations to merchants and partners that integrate with or use Paytrim's services,
+            with a focus on online payments: which integration to choose, what it means for PCI DSS, and how to
+            secure the parts that remain your responsibility.
+        </p>
+
+        <h2 id="about-this-guide">About this guide</h2>
+        <p>
+            If cardholders enter card details only on Paytrim's Hosted Payment Page, your PCI DSS scope is small.
+            Most merchants can then validate with SAQ A. Every integration choice that moves card data or checkout
+            scripts closer to your own systems increases what you must protect and prove.
+        </p>
+        <p>This guide is for:</p>
+        <ul>
+            <li><strong>Merchants</strong> that accept online card payments through Paytrim.</li>
+            <li><strong>Partners</strong> (integrators, platforms and ISVs) that build, host or operate checkouts for
+                Paytrim merchants, or that integrate with the Paytrim API.</li>
+        </ul>
+        <p>
+            It explains which integration to choose, what each choice means for PCI DSS v4.0.1, and how to secure the
+            parts that remain your responsibility. It supports, but does not replace, your agreement with Paytrim:
+            the General Terms for E-commerce Card Acquiring, the Instructions for Merchants &ndash; E-commerce and,
+            for partners, the partner agreement and its appendices. Where this guide and those documents differ, the
+            agreements prevail.
+        </p>
+        <div class="info-box">
+            <strong>Shared responsibility</strong>
+            Paytrim operates the payment page, card vault, tokenisation, 3-D Secure and authorisation. You are
+            responsible for your website, the page that sends the cardholder to Paytrim, your servers and your API
+            credentials. The full split per PCI DSS requirement is in the PCI DSS Responsibility Matrix, which Paytrim
+            sends to merchants and partners on request.
+        </div>
+
+        <h2 id="integration-options-and-pci-dss-scope">Integration options and PCI DSS scope</h2>
+        <p>
+            Choose the Hosted Payment Page with full-page redirect unless you have a specific reason not to. It is the
+            only way to take card details where neither the card data nor the scripts on your checkout are in scope
+            for the PCI DSS script requirements. Apple Pay and Google Pay host-to-host (profile E2) can be added next
+            to it without changing your SAQ.
+        </p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Profile</th>
+                        <th>Integration</th>
+                        <th>Card data in your systems</th>
+                        <th>Typical SAQ</th>
+                        <th>Script requirements (6.4.3, 11.6.1)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>E1</td>
+                        <td>Hosted Payment Page opened by full-page redirect (<code>order_url</code> /
+                            <code>payment_url</code>), payment links, recurring and one-click payments with
+                            <code>vault_token</code> and without <code>cvc</code></td>
+                        <td>None. Only tokens and truncated card numbers</td>
+                        <td>SAQ A</td>
+                        <td>Do not apply</td>
+                    </tr>
+                    <tr>
+                        <td>E1-iframe</td>
+                        <td>As E1, but your checkout also embeds card fields of another payment provider (iframe or
+                            script)</td>
+                        <td>None</td>
+                        <td>SAQ A</td>
+                        <td>Apply to the page that embeds the other provider's fields (<a href="#another-providers-embedded-card-fields-and-script-security">see
+                                below</a>)</td>
+                    </tr>
+                    <tr>
+                        <td>E2</td>
+                        <td>Apple Pay or Google Pay host-to-host with encrypted payload. Paytrim holds the decryption
+                            keys. Google Pay only with the <code>CRYPTOGRAM_3DS</code> authentication method</td>
+                        <td>Encrypted payload you cannot decrypt</td>
+                        <td>SAQ A</td>
+                        <td>Do not apply to the wallet button</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p>
+            Profile E2 is switched off by default; Paytrim enables it for a project on request. The SAQ type that
+            applies to you is set by Paytrim; the table shows the usual outcome.
+        </p>
+        <p>
+            Paytrim does not offer integrations where card data or <code>cvc</code> is entered on, or passes through,
+            your own pages or servers: no card form of your own, no <code>cvc</code> through the API, no wallet
+            payloads decrypted with your own keys, and no AFT to a card account.
+        </p>
+        <p>
+            Using a hosted page does not take your website out of scope altogether. Paytrim's payment page cannot be
+            embedded in your website; it is always opened by full-page redirect. The page that redirects to Paytrim's
+            page can be manipulated to send cardholders to a fake payment page. That is why SAQ A still covers your
+            website, and why the rest of this guide matters even for profile E1.
+        </p>
+
+        <h2 id="hosted-payment-page-via-redirect">Hosted Payment Page via redirect</h2>
+        <p>
+            With full-page redirect, the cardholder leaves your site and enters card details on Paytrim's page.
+            Paytrim manages and monitors the scripts on that page. Your responsibility is to make sure the redirect cannot be
+            tampered with.
+        </p>
+        <h3>How the flow works</h3>
+        <ol>
+            <li>Your server creates an order through the Merchant API, using your API credentials.</li>
+            <li>Paytrim returns a <code>payment_url</code> for the order.</li>
+            <li>Your checkout sends the browser to that URL with a full-page navigation, not in a frame or pop-up.</li>
+            <li>The cardholder pays and completes 3-D Secure on Paytrim's page.</li>
+            <li>Paytrim sends the cardholder back to your return URL. Your server confirms the result through the
+                Merchant API before you fulfil the order.</li>
+        </ol>
+        <h3>Requirements</h3>
+        <ul>
+            <li><strong>Create the payment URL on your server.</strong> Never build it in the browser or take it from
+                a query string, a cookie or user input. Before redirecting, check that the URL begins with
+                <code>https://api.pay.paytrim.com/pay/</code>. This stops an attacker from swapping the link for a
+                fake payment page.</li>
+            <li><strong>Serve your whole site over HTTPS</strong> with TLS 1.2 or newer, and set
+                <code>Strict-Transport-Security</code>.</li>
+            <li><strong>Never trust the return URL alone.</strong> Query parameters on the return can be forged. Check
+                the order status server-to-server before you ship goods or mark an order as paid.</li>
+            <li><strong>Keep the checkout step clean.</strong> Do not load analytics, session recording, chat or A/B
+                testing scripts on the page that starts the redirect.</li>
+            <li><strong>Patch your platform.</strong> Keep the e-commerce platform, themes and plug-ins up to date
+                (PCI DSS 6.3.3) and remove those you do not use.</li>
+            <li><strong>Protect administration.</strong> Use unique accounts and multi-factor authentication for
+                everyone who can change your website or checkout.</li>
+        </ul>
+        <p>
+            The PCI DSS script requirements 6.4.3 and 11.6.1 do not apply to a page that only redirects the full page.
+            The page is still part of your SAQ A scope, because a compromised site can redirect cardholders to a fake
+            payment page.
+        </p>
+
+        <h2 id="another-providers-embedded-card-fields-and-script-security">Another provider's embedded card fields and script security</h2>
+        <p>
+            If your checkout also embeds card fields or a payment page of another payment provider, in an iframe or by
+            script, you must confirm that your page cannot be used for a script attack. This is an eligibility
+            criterion for SAQ A since PCI DSS v4.0.1 and the January 2025 revision of SAQ A.
+        </p>
+        <div class="warn-box">
+            <strong>Why it matters.</strong> Script attacks (also called e-skimming or Magecart) inject or alter
+            JavaScript on a checkout page. On a page that embeds a payment iframe, a malicious script can replace the
+            iframe with a fake form or overlay one on top of it. The cardholder then types card details into the
+            attacker's form.
+        </div>
+        <p>
+            You can meet the criterion in one of two ways: apply the techniques in PCI DSS 6.4.3 and 11.6.1 to the
+            page that embeds the other provider's fields (see the table below), or get a written confirmation from
+            that provider that its solution protects your page against script attacks (PCI SSC FAQ 1588).
+        </p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Requirement</th>
+                        <th>What PCI DSS asks</th>
+                        <th>What to do on the page that embeds the other provider's fields</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>6.4.3</td>
+                        <td>Every script on the payment page is authorised, its integrity is assured, and there is an
+                            inventory with a written justification for each script</td>
+                        <td>Keep a list of every script: its source, owner and purpose. Approve new scripts before
+                            release. Load only scripts you need, and pin them with Subresource Integrity (SRI) or a
+                            strict Content Security Policy (CSP)</td>
+                    </tr>
+                    <tr>
+                        <td>11.6.1</td>
+                        <td>A change- and tamper-detection mechanism alerts on unauthorised changes to security-relevant
+                            HTTP headers and to the script contents of the payment page, as received by the browser</td>
+                        <td>Monitor the page as the cardholder sees it, at least weekly or at the frequency in your
+                            risk analysis. Use CSP reporting or a commercial script-monitoring service, and act on the
+                            alerts</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <h3>Practical advice</h3>
+        <ul>
+            <li><strong>Put the embedded fields on a dedicated page</strong> with as few scripts as possible. Fewer
+                scripts mean a shorter inventory and fewer alerts.</li>
+            <li><strong>Do not let scripts create or move the iframe</strong> unless you control those scripts. If a
+                third-party tag builds the payment frame, that tag is part of your scope.</li>
+            <li><strong>Use the <a href="#content-security-policy-and-subresource-integrity">Content Security Policy below</a>.</strong> CSP with a strict
+                <code>script-src</code> and <code>frame-src</code> covers much of 6.4.3, and CSP violation reports can
+                feed your 11.6.1 monitoring.</li>
+            <li><strong>Expect to buy a monitoring service</strong> if your checkout uses many third-party tags. Manual
+                review rarely keeps up.</li>
+        </ul>
+        <p>
+            If this is more than you want to maintain, send cardholders to the other provider by full-page redirect as
+            well. That removes the script requirements altogether.
+        </p>
+
+        <h2 id="content-security-policy-and-subresource-integrity">Content Security Policy and Subresource Integrity</h2>
+        <p>
+            A Content Security Policy (CSP) tells the browser which sources your checkout may load scripts and frames
+            from. It is the most effective single control against script attacks on your page. Start in report-only
+            mode (<code>Content-Security-Policy-Report-Only</code>), fix what it reports, then enforce it.
+        </p>
+        <p>Recommended policy for your checkout:</p>
+        <pre><code>Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' 'nonce-{random-per-response}' 'strict-dynamic';
+  connect-src 'self';
+  img-src 'self' data:;
+  style-src 'self';
+  object-src 'none';
+  base-uri 'none';
+  form-action 'self';
+  frame-ancestors 'self';
+  upgrade-insecure-requests;
+  report-to csp-endpoint;</code></pre>
+        <h3>Notes on the directives</h3>
+        <ul>
+            <li><strong><code>frame-src</code></strong> is not needed for Paytrim, since Paytrim's payment page is
+                opened by full-page redirect. If your checkout embeds another provider's card fields, allow only that
+                provider's domain in <code>frame-src</code>.</li>
+            <li><strong><code>script-src</code> with a nonce</strong> lets only scripts you have tagged run. Generate a
+                new random nonce for every response. Avoid <code>'unsafe-inline'</code> and
+                <code>'unsafe-eval'</code>.</li>
+            <li><strong><code>frame-ancestors 'self'</code></strong> stops other sites from framing your checkout
+                (clickjacking).</li>
+            <li><strong><code>report-to</code></strong> sends violations to an endpoint you monitor. Combined with a
+                review routine, this supports PCI DSS 11.6.1. Add a <code>Reporting-Endpoints</code> header that
+                defines <code>csp-endpoint</code>.</li>
+            <li><strong>Apple Pay and Google Pay</strong> on your own page (profile E2) need their script and frame
+                sources added, for example <code>https://applepay.cdn-apple.com</code> and
+                <code>https://pay.google.com</code>. Check the wallet providers' current documentation.</li>
+        </ul>
+        <p>With full-page redirect, the policy is not required for PCI DSS, but it protects the page that starts the
+            redirect.</p>
+        <h3>Subresource Integrity (SRI)</h3>
+        <p>
+            If you load a script from a third-party server, add an <code>integrity</code> attribute with its hash, for
+            example:
+        </p>
+        <pre><code>&lt;script src="https://cdn.example.com/lib.js"
+        integrity="sha384-&hellip;"
+        crossorigin="anonymous"&gt;&lt;/script&gt;</code></pre>
+        <p>
+            The browser then refuses the script if its contents change. SRI works only for files that do not change
+            without a new version; it cannot be used for tag managers or scripts that update themselves.
+        </p>
+        <h3>Other security headers</h3>
+        <p>
+            Set these on checkout pages: <code>Strict-Transport-Security</code>,
+            <code>X-Content-Type-Options: nosniff</code> and
+            <code>Referrer-Policy: strict-origin-when-cross-origin</code>. PCI DSS 11.6.1 asks you to detect
+            unauthorised changes to these headers as well.
+        </p>
+
+        <h2 id="api-credentials">API credentials</h2>
+        <p>
+            Treat your Paytrim credentials like a bank password. This applies to the Merchant API key for online
+            payments and to the client secret you use for the <a href="auth.html">Paytrim API</a>.
+        </p>
+        <p>
+            A Merchant API key gives full access to its project. With it, someone can refund payments, charge saved
+            cards, read orders with customer details and, where enabled, send payouts to cards.
+        </p>
+        <h3>How Paytrim issues Merchant API keys</h3>
+        <ul>
+            <li>One set of API credentials per project.</li>
+            <li>Test credentials first. Production credentials only after Paytrim has verified your integration.</li>
+            <li>Keys are delivered through a secure channel, never in plain-text e-mail. When a partner installs the
+                integration, Paytrim delivers the key to the partner only after the merchant has authorised it in
+                writing.</li>
+            <li>Only Paytrim can revoke and reissue a key. Paytrim may do so without notice if it suspects misuse.</li>
+        </ul>
+        <h3>Your requirements</h3>
+        <ul>
+            <li><strong>Call the API only from your server.</strong> Never put an API key or client secret in a
+                browser, a mobile app or any code that runs on the customer's device.</li>
+            <li><strong>Store credentials in a secrets manager</strong> (for example Azure Key Vault, AWS Secrets
+                Manager or HashiCorp Vault). Never in source code, configuration files in a repository, e-mail, chat,
+                tickets or shared documents.</li>
+            <li><strong>Limit access</strong> to named people who need it, protected by multi-factor authentication.
+                Keep a record of who has had access.</li>
+            <li><strong>Use TLS 1.2 or newer</strong> for every API call and validate Paytrim's certificate. Do not
+                disable certificate checks, not even in test.</li>
+            <li><strong>Do not log secrets or card data.</strong> Mask API keys, client secrets and access tokens in
+                logs and error reports. Never log full card numbers or <code>cvc</code>.</li>
+            <li><strong>Verify, don't trust.</strong> Before you fulfil an order, read its status from the API. Do not
+                rely only on the return URL or a message that arrives at your endpoint.</li>
+            <li><strong>Watch your own activity.</strong> Review refunds and unusual orders regularly. Unexpected
+                refunds are a common sign of a stolen key.</li>
+            <li><strong>Tell Paytrim within 24 hours</strong> if you suspect that a key or secret has been exposed,
+                when you change partner, or when someone with access leaves. Paytrim will issue new credentials.</li>
+        </ul>
+        <h3>Ask only for the features you use</h3>
+        <p>
+            One-click payments, which the cardholder starts and authenticates with 3-D Secure, and recurring and other
+            merchant-initiated payments are off by default. Paytrim enables them per merchant on request and after
+            approval. Refunds through the API are switched off at onboarding and enabled on request, and host-to-host
+            wallets are enabled per project on request. AFT to a card account is not available. Other AFT and OCT are
+            not available without a separate agreement. Each feature widens what a stolen key can do.
+        </p>
+        <div class="warn-box">
+            <strong>Never send <code>cvc</code></strong> with one-click, recurring or other stored-card payments, even
+            where the gateway documentation shows the field. Sending <code>cvc</code> is not permitted.
+        </div>
+
+        <h2 id="platforms-and-partners">Platforms and partners</h2>
+        <p>
+            If you host, operate or hold API keys for a merchant's checkout, you are a third-party service provider
+            (TPSP) under PCI DSS. This applies even when card details are only entered on Paytrim's page. A platform
+            that redirects to Paytrim's page controls the step where cardholders can be sent to a fake page.
+        </p>
+        <p>Paytrim classifies partners in the partner agreement:</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>What you do</th>
+                        <th>TPSP for the merchant?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Integrator</td>
+                        <td>Builds or configures the checkout and hands it over. No ongoing access to the website or
+                            API keys</td>
+                        <td>No, once handed over</td>
+                    </tr>
+                    <tr>
+                        <td>Managing Integrator</td>
+                        <td>Hosts, operates or maintains the merchant's website, has admin access, or holds its API
+                            keys</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Platform Partner</td>
+                        <td>Runs a shared platform where several merchants' checkouts run</td>
+                        <td>Yes, for every merchant on the platform</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <h3>What this means for you as Managing Integrator or Platform Partner</h3>
+        <ul>
+            <li><strong>Your merchants must manage you as a service provider</strong> (PCI DSS 12.8). Expect them to
+                ask for your PCI DSS status.</li>
+            <li><strong>Give each merchant a responsibility split</strong> (PCI DSS 12.9.2): which requirements you
+                manage, which they manage, and which are shared. You can build on Paytrim's PCI DSS Responsibility
+                Matrix, which Paytrim sends you on request.</li>
+            <li><strong>Apply this guide to your platform.</strong> Use full-page redirect to Paytrim, a strict CSP, no
+                third-party tags on the checkout step, patching, MFA for all admin access and API keys in a secrets
+                manager.</li>
+            <li><strong>Help merchants with their SAQ.</strong> The SAQ is the merchant's own and signed by the
+                merchant. Your help does not move their obligations to you.</li>
+            <li><strong>Notify Paytrim before you change</strong> the platform, hosting or checkout flow in a way that
+                affects payments.</li>
+        </ul>
+        <h3>Approved platforms</h3>
+        <p>
+            Paytrim approves Platform Partners' platforms against its Technical Requirements for Platform Partners,
+            which Paytrim provides on request. An approved platform signs an annual self-declaration against those
+            requirements and sends Paytrim the results of its quarterly external scans for the last four quarters
+            every year. Paytrim checks approved platforms' checkout pages itself. In some cases, for example above a
+            volume threshold, after a security incident or if the platform embeds the payment page, Paytrim requires
+            an Attestation of Compliance for Service Providers instead.
+        </p>
+        <p>
+            Merchants on an approved platform can use the platform's self-declaration and Paytrim's approval when they
+            check their service providers (PCI DSS 12.8.4). A Managing Integrator cannot be approved: merchants whose
+            website it manages validate with their own SAQ and AOC, and the Managing Integrator supports them with the
+            information in 12.8.4, 12.8.5 and 12.9.2.
+        </p>
+
+        <h2 id="validating-your-compliance">Validating your compliance</h2>
+        <p>What you submit depends on your integration profile and your annual card transaction volume.</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Your situation</th>
+                        <th>What you submit</th>
+                        <th>When</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Profile E1 or E2 through an approved platform, Level 4 (fewer than 20,000 e-commerce
+                            transactions per card brand per year)</td>
+                        <td>Confirmation in your agreement that you meet the SAQ A criteria. The platform's quarterly
+                            scans by an Approved Scanning Vendor (ASV) cover your checkout (PCI DSS 11.3.2). Scan any
+                            other website you run yourself if it links to the checkout</td>
+                        <td>At signing, and whenever your integration changes</td>
+                    </tr>
+                    <tr>
+                        <td>Profile E1, E1-iframe or E2 with your own integration, or on a platform that Paytrim has
+                            not approved, Level 4</td>
+                        <td>SAQ A and AOC, plus quarterly external scans of your website by an ASV (PCI DSS 11.3.2)</td>
+                        <td>Within 90 days of your first e-commerce transaction, then every year</td>
+                    </tr>
+                    <tr>
+                        <td>Profile E1, E1-iframe or E2, Level 3 (20,000 to 1 million e-commerce transactions per card
+                            brand per year)</td>
+                        <td>SAQ A and AOC, plus quarterly external scans of your website by an ASV (PCI DSS 11.3.2)</td>
+                        <td>Every year</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p>
+            Levels 1 and 2 (over 1 million transactions per card brand per year) follow the card schemes' rules and are
+            agreed with Paytrim case by case.
+        </p>
+        <h3>What Paytrim provides to you</h3>
+        <ul>
+            <li>The PCI DSS Responsibility Matrix for your integration profile, on request.</li>
+            <li>Evidence of the PCI DSS compliance of the Paytrim Payment Solution, on request.</li>
+            <li>Answers to which SAQ applies to you.</li>
+        </ul>
+        <p>
+            Paytrim reviews a sample of merchant checkouts each quarter. The review covers whether the checkout uses
+            full-page redirect to Paytrim, the scripts on the page and the CSP.
+        </p>
+
+        <h2 id="suspected-compromise">Suspected compromise</h2>
+        <p>
+            Tell Paytrim without undue delay, and within 24 hours at the latest, if you suspect that your checkout,
+            payment flow, API key or client secret has been compromised. Report suspicions too; you do not need proof.
+        </p>
+        <h3>Report, for example</h3>
+        <ul>
+            <li>an unknown or changed script on a checkout page, or a CSP or monitoring alert you cannot explain,</li>
+            <li>a redirect or iframe that points somewhere other than Paytrim,</li>
+            <li>customers reporting a payment page that looked different, or fraud shortly after buying from you,</li>
+            <li>refunds or orders you did not make,</li>
+            <li>an API key or secret found in a repository, log, ticket or e-mail, or held by someone who has left.</li>
+        </ul>
+        <h3>What to do</h3>
+        <ol>
+            <li><strong>Contact Paytrim</strong> at <a href="mailto:itoperations@paytrim.com">itoperations@paytrim.com</a>.</li>
+            <li><strong>Preserve evidence.</strong> Keep logs, the affected pages and scripts, and a copy of the changed
+                files. Do not wipe or rebuild servers before you have agreed this with Paytrim.</li>
+            <li><strong>Contain the damage.</strong> Remove the malicious code or switch to full-page redirect. Paytrim
+                can revoke your credentials and suspend payments while the incident is investigated.</li>
+            <li><strong>Cooperate</strong> with Paytrim, the card schemes and any forensic investigator (PFI) they
+                appoint.</li>
+        </ol>
+        <p>Partners that serve several merchants also give Paytrim a list of the merchants and projects affected.</p>
+
+        <h2 id="checklist">Checklist</h2>
+        <p>Go through this list before you go live, and again after any change to your checkout.</p>
+        <ul class="checklist">
+            <li>Card details are entered only on Paytrim's page, opened by full-page redirect</li>
+            <li>The payment URL is created on your server, never in the browser</li>
+            <li>The order status is checked through the API before fulfilment</li>
+            <li>The whole site uses HTTPS with TLS 1.2 or newer and HSTS</li>
+            <li>No analytics, session recording, chat or A/B scripts on the checkout step</li>
+            <li>Another provider's embedded card fields only: a script inventory with a justification per script
+                (6.4.3)</li>
+            <li>Another provider's embedded card fields only: weekly change and tamper detection of scripts and
+                headers (11.6.1)</li>
+            <li>A Content Security Policy is enforced and its reports are monitored</li>
+            <li>Platform, themes and plug-ins are patched; unused ones are removed</li>
+            <li>Quarterly external vulnerability scans of your website by an ASV pass (11.3.2)</li>
+            <li>MFA for everyone with admin access to the site or the merchant portal</li>
+            <li>API keys and client secrets are in a secrets manager, used only from your server, and masked in
+                logs</li>
+            <li>You know who to contact at Paytrim if something looks wrong</li>
+            <li>Partners: merchants have received your responsibility split (12.9.2)</li>
+        </ul>
+
+        <h2 id="sources">Sources</h2>
+        <ul>
+            <li><a href="https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0_1.pdf"
+                    target="_blank" rel="noopener">PCI DSS v4.0.1</a>, requirements 6.4.3, 11.6.1, 12.8 and 12.9</li>
+            <li><a href="https://pcisecuritystandards.org/faqs/1588" target="_blank" rel="noopener">PCI SSC FAQ 1588
+                    &ndash; SAQ A eligibility criteria for scripts</a></li>
+            <li><a href="https://www.pcisecuritystandards.org/document_library/" target="_blank" rel="noopener">PCI SSC
+                    Document Library &ndash; SAQ A</a></li>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP" target="_blank" rel="noopener">MDN
+                    &ndash; Content Security Policy</a></li>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity" target="_blank"
+                    rel="noopener">MDN &ndash; Subresource Integrity</a></li>
+        </ul>
+
+        <p class="meta">Last updated 2026-11-13. This page may change as PCI DSS and Paytrim's services evolve.</p>
+        <a href="index.html">&laquo; Back to documentation</a>
+    </main>
+
+    <script>
+        // Highlight the section in the sidebar that is currently in view.
+        const links = document.querySelectorAll('.sidebar li a');
+        const byId = {};
+        links.forEach(a => byId[a.getAttribute('href').slice(1)] = a);
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    links.forEach(a => a.classList.remove('active'));
+                    byId[e.target.id]?.classList.add('active');
+                }
+            });
+        }, { rootMargin: '0px 0px -70% 0px' });
+        document.querySelectorAll('h2[id]').forEach(h => observer.observe(h));
+    </script>
+</body>
+
+</html>
