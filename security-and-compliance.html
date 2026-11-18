@@ -311,8 +311,9 @@
                 <tbody>
                     <tr>
                         <td>E1</td>
-                        <td>Hosted Payment Page opened by full-page redirect (<code>order_url</code> /
-                            <code>payment_url</code>), payment links, recurring and one-click payments with
+                        <td>Hosted Payment Page opened by full-page redirect (<code>order_url</code>, or the
+                            transaction's <code>payment_url</code> when the customer selects the payment method in
+                            your checkout), payment links, recurring and one-click payments with
                             <code>vault_token</code> and without <code>cvc</code></td>
                         <td>None. Only tokens and truncated card numbers</td>
                         <td>SAQ A</td>
@@ -363,7 +364,9 @@
         <h3>How the flow works</h3>
         <ol>
             <li>Your server creates an order through the Merchant API, using your API credentials.</li>
-            <li>Paytrim returns a <code>payment_url</code> for the order.</li>
+            <li>Paytrim returns an <code>order_url</code> for the order. If you send a <code>transactions</code>
+                list with the payment method the customer selected in your checkout, use the transaction's
+                <code>payment_url</code> instead of the <code>order_url</code>.</li>
             <li>Your checkout sends the browser to that URL with a full-page navigation, not in a frame or pop-up.</li>
             <li>The cardholder pays and completes 3-D Secure on Paytrim's page.</li>
             <li>Paytrim sends the cardholder back to your return URL. Your server confirms the result through the
@@ -407,7 +410,8 @@
         <p>
             You can meet the criterion in one of two ways: apply the techniques in PCI DSS 6.4.3 and 11.6.1 to the
             page that embeds the other provider's fields (see the table below), or get a written confirmation from
-            that provider that its solution protects your page against script attacks (PCI SSC FAQ 1588).
+            that provider that its solution, when implemented according to its instructions, protects your page
+            against script attacks (PCI SSC FAQ 1588).
         </p>
         <div class="table-wrap">
             <table>
@@ -548,8 +552,9 @@
                 rely only on the return URL or a message that arrives at your endpoint.</li>
             <li><strong>Watch your own activity.</strong> Review refunds and unusual orders regularly. Unexpected
                 refunds are a common sign of a stolen key.</li>
-            <li><strong>Tell Paytrim within 24 hours</strong> if you suspect that a key or secret has been exposed,
-                when you change partner, or when someone with access leaves. Paytrim will issue new credentials.</li>
+            <li><strong>Tell Paytrim within 24 hours</strong> if you suspect that a key or secret has been exposed.
+                Tell Paytrim without undue delay when you change partner or when someone with access leaves. Paytrim
+                will issue new credentials.</li>
         </ul>
         <h3>Ask only for the features you use</h3>
         <p>
@@ -622,8 +627,8 @@
             which Paytrim provides on request. An approved platform signs an annual self-declaration against those
             requirements and sends Paytrim the results of its quarterly external scans for the last four quarters
             every year. Paytrim checks approved platforms' checkout pages itself. In some cases, for example above a
-            volume threshold, after a security incident or if the platform embeds the payment page, Paytrim requires
-            an Attestation of Compliance for Service Providers instead.
+            volume threshold, after a security incident, or if the checkout embeds another provider's card fields,
+            Paytrim requires an Attestation of Compliance for Service Providers in addition.
         </p>
         <p>
             Merchants on an approved platform can use the platform's self-declaration and Paytrim's approval when they
@@ -731,12 +736,11 @@
 
         <h2 id="sources">Sources</h2>
         <ul>
-            <li><a href="https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0_1.pdf"
-                    target="_blank" rel="noopener">PCI DSS v4.0.1</a>, requirements 6.4.3, 11.6.1, 12.8 and 12.9</li>
+            <li><a href="https://www.pcisecuritystandards.org/document_library/" target="_blank" rel="noopener">PCI SSC
+                    Document Library</a> &ndash; PCI DSS v4.0.1 (requirements 6.4.3, 11.6.1, 12.8 and 12.9) and
+                SAQ A</li>
             <li><a href="https://pcisecuritystandards.org/faqs/1588" target="_blank" rel="noopener">PCI SSC FAQ 1588
                     &ndash; SAQ A eligibility criteria for scripts</a></li>
-            <li><a href="https://www.pcisecuritystandards.org/document_library/" target="_blank" rel="noopener">PCI SSC
-                    Document Library &ndash; SAQ A</a></li>
             <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP" target="_blank" rel="noopener">MDN
                     &ndash; Content Security Policy</a></li>
             <li><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity" target="_blank"
